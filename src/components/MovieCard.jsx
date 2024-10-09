@@ -6,18 +6,21 @@ const MovieCard = ({ movie }) => {
 
 	return (
 		<>
-			<Link to={`movie/${id}`}>
-				<div className="max-w-sm  border border-sky-500 rounded-lg">
+			<div
+				className="max-w-sm  border-2 hover:border-sky-500 hover:scale-105 transition-transform duration-300 ease-in-out
+  rounded-lg grid grid-rows-subgrid row-span-2"
+			>
+				<Link to={`movie/${id}`}>
 					<img className="rounded-t-lg " src={movieProfileImage} alt="" />
 
 					<div className="p-5">
-						<h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 ">
+						<h5 className="mb-2 text-2xl font-bold tracking-tight text-black text-center ">
 							{title}
 						</h5>
-						<p className="mb-3 font-normal text-gray-700">{overview}</p>
+						{/* <p className="mb-3 font-normal text-gray-700">{overview.substring(0,100)}</p> */}
 					</div>
-				</div>
-			</Link>
+				</Link>
+			</div>
 		</>
 	);
 };

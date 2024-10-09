@@ -10,13 +10,20 @@ const WebRoutes = () => {
 			<Routes>
 				<Route path="/" element={<Movies apiPath="movie/now_playing" />} />
 				<Route path="movie/:id" element={<MovieInfo />} />
-				<Route path="movies/popular" element={<Movies apiPath="movie/popular" />} />
-				<Route path="movies/top" element={<Movies apiPath="movie/top_rated" />} />
+
+				<Route
+					path="movies/popular"
+					element={<Movies apiPath="movie/popular" />}
+				/>
+				<Route
+					path="movies/top"
+					element={<Movies apiPath="movie/top_rated" />}
+				/>
 				<Route
 					path="movies/upcoming"
 					element={<Movies apiPath="movie/upcoming" />}
 				/>
-				<Route path="search" element={<Search apiPath ="search/movie"  />} />
+				<Route path="search" element={<Search apiPath="search/movie" />} />
 				<Route path="*" element={<PageNotFound />} />
 			</Routes>
 		</>
