@@ -1,17 +1,21 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { MdStarRate } from "react-icons/md";
+import useTitle from "../hooks/useTitle";
 
 const MovieInfo = () => {
 	const params = useParams();
 	const [movie, setMovie] = useState({});
+	useTitle(movie.title);
 
 	const image = `https://image.tmdb.org/t/p/w500/${movie.poster_path}`;
 
 	useEffect(() => {
+		const key = import.meta.env.VITE_API_KEY;
+
 		async function fetchMovie() {
 			const response = await fetch(
-				`https://api.themoviedb.org/3/movie/${params.id}?api_key=b80d59c33d6d57ed9c7e3713f91c188a`
+				`https://api.themoviedb.org/3/movie/${params.id}?api_key=${key}`
 			);
 			const json = await response.json();
 			setMovie(json);
@@ -21,12 +25,12 @@ const MovieInfo = () => {
 	}, [params.id]);
 
 	return (
-		<section className="flex justify-around flex-wrap py-5 ">
-			<div className="max-w-sm">
+		<section className="flex justify-center gap-10 flex-wrap py-5">
+			<div className="max-w-sm ">
 				<img className="rounded-t-xl" src={image} alt={movie.title} />
 			</div>
 
-			<div className="max-w-2xl text-gray-700 text-lg px-5  ">
+			<div className="max-w-2xl text-lg px-5">
 				<h1 className="text-4xl font-bold my-3 text-center lg:text-left">
 					{movie.title}
 				</h1>

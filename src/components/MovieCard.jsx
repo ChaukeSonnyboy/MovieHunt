@@ -10,7 +10,7 @@ const MovieCard = ({ movie }) => {
 				className="max-w-sm  border-2 hover:border-sky-500 hover:scale-105 transition-transform duration-300 ease-in-out
   rounded-lg grid grid-rows-subgrid row-span-2"
 			>
-				<Link to={`movie/${id}`}>
+				<Link to={`/movie/${id}`}>
 					<img className="rounded-t-lg " src={movieProfileImage} alt="" />
 
 					<div className="p-5">

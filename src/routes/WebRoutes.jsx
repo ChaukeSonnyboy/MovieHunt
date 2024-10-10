@@ -8,20 +8,25 @@ const WebRoutes = () => {
 	return (
 		<>
 			<Routes>
-				<Route path="/" element={<Movies apiPath="movie/now_playing" />} />
+				<Route
+					path="/"
+					element={<Movies apiPath="movie/now_playing" title="MovieHunt" />}
+				/>
 				<Route path="movie/:id" element={<MovieInfo />} />
 
 				<Route
 					path="movies/popular"
-					element={<Movies apiPath="movie/popular" />}
+					element={<Movies apiPath="movie/popular" title="Popular Movies" />}
 				/>
 				<Route
 					path="movies/top"
-					element={<Movies apiPath="movie/top_rated" />}
+					element={
+						<Movies apiPath="movie/top_rated" title="Top Rated Movies" />
+					}
 				/>
 				<Route
 					path="movies/upcoming"
-					element={<Movies apiPath="movie/upcoming" />}
+					element={<Movies apiPath="movie/upcoming" title="Upcoming Movies" />}
 				/>
 				<Route path="search" element={<Search apiPath="search/movie" />} />
 				<Route path="*" element={<PageNotFound />} />

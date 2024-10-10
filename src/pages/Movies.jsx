@@ -1,8 +1,10 @@
 import useFetch from "../hooks/useFetch";
 import MovieCard from "../components/MovieCard";
+import useTitle from "../hooks/useTitle";
 
-const Movies = ({ apiPath }) => {
+const Movies = ({ apiPath, title }) => {
 	const { fetchedData: moviesList } = useFetch(apiPath);
+	useTitle(title);
 
 	// console.log(moviesList);
 
