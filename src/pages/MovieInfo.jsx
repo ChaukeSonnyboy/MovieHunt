@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { MdStarRate } from "react-icons/md";
 import useTitle from "../hooks/useTitle";
+import { FaExternalLinkAlt } from "react-icons/fa";
 
 const MovieInfo = () => {
 	const params = useParams();
@@ -82,14 +83,16 @@ const MovieInfo = () => {
 					<span>{movie.release_date}</span>
 				</p>
 
-				<p className="my-4">
+				<p className="my-4 ">
 					<span className="mr-2 font-bold">IMDB Code:</span>
 					<a
 						href={`https://www.imdb.com/title/${movie.imdb_id}`}
 						target="_blank"
 						rel="noreferrer"
+						className="hover:text-sky-500 hover:underline inline-flex items-center gap-1 "
 					>
-						{movie.imdb_id}
+						<span> {movie.imdb_id}</span>
+						<FaExternalLinkAlt className="w-4 h-4 " />
 					</a>
 				</p>
 			</div>

@@ -15,7 +15,6 @@ const useFetch = (apiPath, myQuery = "") => {
 
 		fetchMovies();
 	}, [url]);
-	
 
 	return { fetchedData };
 };

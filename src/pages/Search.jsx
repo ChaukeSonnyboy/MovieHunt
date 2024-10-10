@@ -1,4 +1,5 @@
 import { useSearchParams } from "react-router-dom";
+import PropTypes from "prop-types";
 import useFetch from "../hooks/useFetch";
 import MovieCard from "../components/MovieCard";
 import useTitle from "../hooks/useTitle";
@@ -27,6 +28,10 @@ const Search = ({ apiPath }) => {
 			</div>
 		</section>
 	);
+};
+
+Search.propTypes = {
+	apiPath: PropTypes.string.isRequired,
 };
 
 export default Search;

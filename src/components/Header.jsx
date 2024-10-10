@@ -14,6 +14,11 @@ const Header = () => {
 	const handleSubmit = (event) => {
 		event.preventDefault();
 		const userQuery = event.target.search.value;
+
+		if (!userQuery) {
+			alert("Please Enter a Valid Movie Name to Search.");
+			return;
+		}
 		event.target.reset();
 
 		return navigate(`/search?q=${userQuery}`);
@@ -109,7 +114,7 @@ const Header = () => {
 									type="text"
 									id="search"
 									name="search"
-									className="block w-full p-2 ps-2 text-sm text-black border border-sky-500 rounded-full  focus:outline-none"
+									className="block w-full p-2 ps-5 text-sm text-black border border-sky-500 rounded-full  focus:outline-none"
 									placeholder="Search Movie"
 								/>
 
@@ -117,14 +122,14 @@ const Header = () => {
 									type="submit"
 									className="absolute top-0 bottom-0 right-0 flex items-center pe-3 "
 								>
-									<CiSearch className="w-6 h-6 " />
+									<CiSearch className="w-6 h-6 text-sky-700" />
 
 									{/* <span className="sr-only">Search icon</span> */}
 								</button>
 							</form>
 						</div>
 						<button className="inline-flex items-center p-2 justify-center text-black rounded-lg md:hidden hover:bg-sky-400 focus:outline-none ">
-							<FaBars className="w-6 h-6" />
+							<FaBars className="w-6 h-6 " />
 
 							<span className="sr-only">Open main menu</span>
 						</button>
