@@ -1,12 +1,11 @@
 import useFetch from "../hooks/useFetch";
 import MovieCard from "../components/MovieCard";
 import useTitle from "../hooks/useTitle";
+import PropTypes from "prop-types";
 
 const Movies = ({ apiPath, title }) => {
-	const { fetchedData: moviesList } = useFetch(apiPath);
+	const { fetchedData: moviesList } = useFetch(apiPath); // console.log(moviesList);
 	useTitle(title);
-
-	// console.log(moviesList);
 
 	const sortedMoviesList = [...moviesList].sort(
 		(a, b) => new Date(b.release_date) - new Date(a.release_date)
@@ -21,6 +20,11 @@ const Movies = ({ apiPath, title }) => {
 			</div>
 		</section>
 	);
+};
+
+Movies.propTypes = {
+	apiPath: PropTypes.string.isRequired,
+	title: PropTypes.string.isRequired,
 };
 
 export default Movies;

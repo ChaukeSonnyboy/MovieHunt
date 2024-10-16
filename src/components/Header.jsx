@@ -1,19 +1,18 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { FaSearch } from "react-icons/fa";
 import { CiSearch } from "react-icons/ci";
 import { IoCloseSharp } from "react-icons/io5";
 import { FaBars } from "react-icons/fa";
 import { useState } from "react";
 
 const Header = () => {
-	const [openSearchBar, setOpenSearchBar] = useState(false);
+	// const [openSearchBar, setOpenSearchBar] = useState(false);
 	const [openMenu, setOpenMenu] = useState(false);
 	const navigate = useNavigate();
 
 	const activeLink =
 		"block py-2 px-3 text-white bg-sky-500 rounded md:bg-transparent md:text-sky-500 md:p-0 ";
 	const nonActiveLink =
-		"block py-2 px-3 text-black rounded hover:bg-sky-300 md:hover:bg-transparent md:hover:text-sky-500 md:p-0 ";
+		" block py-2 px-3 text-black rounded md:border-0 border-b border-sky-500 hover:bg-sky-300 md:hover:bg-transparent md:hover:text-sky-500 md:p-0 ";
 
 	const handleSubmit = (event) => {
 		event.preventDefault();
@@ -28,7 +27,7 @@ const Header = () => {
 	};
 
 	const collapsedNav = (
-		<div className="absolute top-0 right-0 p-2  border border-sky-500 rounded-xl w-60 text-center bg-white">
+		<div className="absolute top-0 right-0 p-2 mt-5 mr-3 border  border-sky-500 bg-slate-200 rounded-xl w-60 text-center md:hidden">
 			<IoCloseSharp
 				aria-label="Close Menu"
 				className="w-8 h-8 ml-auto mr-1 mt-1 hover:text-red-600 border border-black hover:border-red-600 rounded-full cursor-pointer"
@@ -82,7 +81,7 @@ const Header = () => {
 	return (
 		<header>
 			<nav>
-				<div className="relative max-w-screen-xl h-20 flex items-center justify-between mx-auto p-4">
+				<div className="relative max-w-screen-xl h-20 flex items-center justify-between mx-auto p-4 md:border-b rounded-3xl md:border-sky-400 mt-2">
 					<Link to="/" className="text-2xl font-semibold">
 						MovieHunt
 					</Link>
@@ -135,7 +134,7 @@ const Header = () => {
 
 					<div className="flex md:order-2">
 						{/* Search bar on larger devices */}
-						<div className="relative hidden md:block">
+						<div className="relative md:block">
 							<form onSubmit={handleSubmit}>
 								<input
 									type="text"
