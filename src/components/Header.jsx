@@ -134,7 +134,7 @@ const Header = () => {
 
 					<div className="flex md:order-2">
 						{/* Search bar on larger devices */}
-						<div className="relative md:block">
+						<div className="relative  hidden md:block">
 							<form onSubmit={handleSubmit}>
 								<input
 									type="text"
