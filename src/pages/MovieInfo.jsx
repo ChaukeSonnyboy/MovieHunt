@@ -27,7 +27,7 @@ const MovieInfo = () => {
 
 	return (
 		<section className="flex justify-center py-8 md:py-0 md:h-screen content-center gap-10 flex-wrap">
-			<div className="md:max-w-sm max-w-[60%]">
+			<div className="md:max-w-sm max-w-[80%]">
 				<img className="rounded-t-xl " src={image} alt={movie.title} />
 			</div>
 
