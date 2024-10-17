@@ -1,11 +1,12 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { CiSearch } from "react-icons/ci";
 import { IoCloseSharp } from "react-icons/io5";
+import { FiSearch } from "react-icons/fi";
 import { FaBars } from "react-icons/fa";
 import { useState } from "react";
+import SearchBar from "./SearchBar"; // Import the reusable SearchBar component
 
 const Header = () => {
-	// const [openSearchBar, setOpenSearchBar] = useState(false);
+	const [openSearchBar, setOpenSearchBar] = useState(true);
 	const [openMenu, setOpenMenu] = useState(false);
 	const navigate = useNavigate();
 
@@ -27,7 +28,7 @@ const Header = () => {
 	};
 
 	const collapsedNav = (
-		<div className="absolute top-0 right-0 p-2 mt-5 mr-3 border  border-sky-500 bg-slate-200 rounded-xl w-60 text-center md:hidden">
+		<div className="absolute top-0 right-0 z-20 p-2 mt-5 mr-3 border  border-sky-500 bg-slate-200 rounded-xl w-60 text-center md:hidden">
 			<IoCloseSharp
 				aria-label="Close Menu"
 				className="w-8 h-8 ml-auto mr-1 mt-1 hover:text-red-600 border border-black hover:border-red-600 rounded-full cursor-pointer"
@@ -134,43 +135,54 @@ const Header = () => {
 
 					<div className="flex md:order-2">
 						{/* Search bar on larger devices */}
-						<div className="relative  hidden md:block">
-							<form onSubmit={handleSubmit}>
-								<input
-									type="text"
-									id="search"
-									name="search"
-									className="p-2 ps-5 text-md border border-sky-500 rounded-full focus:outline-none bg-sky-100"
-									placeholder="Search Movie"
-								/>
-								<button
-									type="submit"
-									className="absolute top-0 bottom-0 right-0 flex items-center pe-3"
-								>
-									<CiSearch className="w-6 h-6 text-sky-700" />
-								</button>
-							</form>
+						<div className="hidden md:block">
+							<SearchBar handleSubmit={handleSubmit} isMobile={false} />
 						</div>
 
 						{/* Menu toggle button for mobile */}
+
+						<button className="p-1 hover:text-sky-500 ">
+							<FiSearch
+								className=" md:hidden w-7 h-7 "
+								onClick={() => setOpenSearchBar(!openSearchBar)}
+							/>
+						</button>
+
 						<div>
 							{openMenu ? (
 								collapsedNav
 							) : (
 								<button
 									aria-label="Toggle Menu"
-									className="p-2 rounded-lg bg-sky-400 focus:outline-none md:hidden border hover:text-sky-400 hover:border-sky-400 hover:bg-transparent"
+									className="p-2 rounded-lg bg-sky-400 focus:outline-none md:hidden border
+									hover:text-sky-400 hover:border-sky-400 hover:bg-transparent"
 								>
 									<FaBars
 										className="w-6 h-6"
-										onClick={() => setOpenMenu(!openMenu)}
+										onClick={() => {
+											setOpenMenu(!openMenu);
+										}}
 									/>
 								</button>
 							)}
 						</div>
 					</div>
 				</div>
+
+				{/* Searchbar for mobile devices */}
 			</nav>
+
+			{openMenu ? (
+				""
+			) : (
+				<div
+					className={` ${
+						openSearchBar ? "hidden" : "block"
+					} w-full md:hidden p-4 relative z-10`}
+				>
+					<SearchBar handleSubmit={handleSubmit} isMobile={true} />{" "}
+				</div>
+			)}
 		</header>
 	);
 };

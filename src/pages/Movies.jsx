@@ -5,6 +5,7 @@ import PropTypes from "prop-types";
 
 const Movies = ({ apiPath, title }) => {
 	const { fetchedData: moviesList } = useFetch(apiPath); // console.log(moviesList);
+
 	useTitle(title);
 
 	const sortedMoviesList = [...moviesList].sort(
