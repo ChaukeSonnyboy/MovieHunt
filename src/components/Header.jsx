@@ -6,7 +6,7 @@ import { useState } from "react";
 import SearchBar from "./SearchBar"; // Import the reusable SearchBar component
 
 const Header = () => {
-	const [openSearchBar, setOpenSearchBar] = useState(true);
+	const [openSearchBar, setOpenSearchBar] = useState(false);
 	const [openMenu, setOpenMenu] = useState(false);
 	const navigate = useNavigate();
 
@@ -31,7 +31,7 @@ const Header = () => {
 		<div className="absolute top-0 right-0 z-20 p-2 mt-5 mr-3 border  border-sky-500 bg-slate-200 rounded-xl w-60 text-center md:hidden">
 			<IoCloseSharp
 				aria-label="Close Menu"
-				className="w-8 h-8 ml-auto mr-1 mt-1 hover:text-red-600 border border-black hover:border-red-600 rounded-full cursor-pointer"
+				className="w-8 h-8 ml-auto mr-1 mt-1 text-red-500 md:text-black hover:text-red-600 border border-red-500 md:border-black hover:border-red-600 rounded-full cursor-pointer"
 				onClick={() => setOpenMenu(!openMenu)}
 			/>
 			<ul className="flex flex-col mt-2 gap-2 font-semibold">
@@ -41,6 +41,9 @@ const Header = () => {
 						className={({ isActive }) =>
 							isActive ? activeLink : nonActiveLink
 						}
+						onClick={() => {
+							setOpenMenu(!openMenu);
+						}}
 					>
 						Home
 					</NavLink>
@@ -51,6 +54,9 @@ const Header = () => {
 						className={({ isActive }) =>
 							isActive ? activeLink : nonActiveLink
 						}
+						onClick={() => {
+							setOpenMenu(!openMenu);
+						}}
 					>
 						Popular
 					</NavLink>
@@ -61,6 +67,9 @@ const Header = () => {
 						className={({ isActive }) =>
 							isActive ? activeLink : nonActiveLink
 						}
+						onClick={() => {
+							setOpenMenu(!openMenu);
+						}}
 					>
 						Top Rated
 					</NavLink>
@@ -71,6 +80,9 @@ const Header = () => {
 						className={({ isActive }) =>
 							isActive ? activeLink : nonActiveLink
 						}
+						onClick={() => {
+							setOpenMenu(!openMenu);
+						}}
 					>
 						Upcoming
 					</NavLink>
@@ -82,7 +94,7 @@ const Header = () => {
 	return (
 		<header>
 			<nav>
-				<div className="relative max-w-screen-xl h-20 flex items-center justify-between mx-auto p-4 md:border-b rounded-3xl md:border-sky-400 mt-2">
+				<div className="relative max-w-screen-xl h-20 flex items-center justify-between mx-auto p-4 md:border-b md:rounded-3xl md:border-sky-400  bg-sky-400 md:bg-transparent">
 					<Link to="/" className="text-2xl font-semibold">
 						MovieHunt
 					</Link>
@@ -139,9 +151,15 @@ const Header = () => {
 							<SearchBar handleSubmit={handleSubmit} isMobile={false} />
 						</div>
 
-						{/* Menu toggle button for mobile */}
+						{/* searchbar toggle button for mobile */}
 
-						<button className="p-1 hover:text-sky-500 ">
+						<button
+							className={`p-1  ${
+								openSearchBar
+									? "text-sky-500 bg-white rounded-2xl"
+									: "text-black"
+							}`}
+						>
 							<FiSearch
 								className=" md:hidden w-7 h-7 "
 								onClick={() => setOpenSearchBar(!openSearchBar)}
@@ -154,11 +172,10 @@ const Header = () => {
 							) : (
 								<button
 									aria-label="Toggle Menu"
-									className="p-2 rounded-lg bg-sky-400 focus:outline-none md:hidden border
-									hover:text-sky-400 hover:border-sky-400 hover:bg-transparent"
+									className="p-2 rounded-lg focus:outline-none md:hidden"
 								>
 									<FaBars
-										className="w-6 h-6"
+										className="w-7 h-7"
 										onClick={() => {
 											setOpenMenu(!openMenu);
 										}}
@@ -168,19 +185,23 @@ const Header = () => {
 						</div>
 					</div>
 				</div>
-
-				{/* Searchbar for mobile devices */}
 			</nav>
+
+			{/* Searchbar for mobile devices */}
 
 			{openMenu ? (
 				""
 			) : (
 				<div
 					className={` ${
-						openSearchBar ? "hidden" : "block"
+						openSearchBar ? "block" : "hidden"
 					} w-full md:hidden p-4 relative z-10`}
 				>
-					<SearchBar handleSubmit={handleSubmit} isMobile={true} />{" "}
+					<SearchBar
+						handleSubmit={handleSubmit}
+						isMobile={true}
+						shouldFocus={openSearchBar}
+					/>{" "}
 				</div>
 			)}
 		</header>

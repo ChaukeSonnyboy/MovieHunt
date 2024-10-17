@@ -1,15 +1,22 @@
-// SearchBar.js
-import { CiSearch } from "react-icons/ci"; // Icon for desktop search button
+import { useRef, useEffect } from "react";
+import { CiSearch } from "react-icons/ci";
 
-// Reusable SearchBar component that accepts 'handleSubmit' and 'isMobile' as props
-const SearchBar = ({ handleSubmit, isMobile }) => {
+const SearchBar = ({ handleSubmit, isMobile, shouldFocus }) => {
+	const inputRef = useRef(null);
+
+	useEffect(() => {
+		if (shouldFocus) {
+			inputRef.current.focus();
+		}
+	}, [shouldFocus]);
+
 	return (
 		<form
 			onSubmit={handleSubmit}
 			className={`relative ${isMobile ? "flex" : ""}`}
 		>
-			{/* Input field for searching movies */}
 			<input
+				ref={inputRef}
 				type="text"
 				id="search"
 				name="search"
