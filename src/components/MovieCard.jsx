@@ -10,7 +10,7 @@ const MovieCard = ({ movie }) => {
 	return (
 		<>
 			<div
-				className="max-w-sm border-2 hover:border-sky-500 hover:scale-105
+				className="max-w-sm border-2 border-transparent hover:border-sky-500 hover:scale-105
 				transition-transform duration-300 ease-in-out
 				rounded-t-lg "
 			>

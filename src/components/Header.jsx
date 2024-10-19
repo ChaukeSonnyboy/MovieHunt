@@ -95,7 +95,13 @@ const Header = () => {
 		<header>
 			<nav>
 				<div className="relative max-w-screen-xl h-20 flex items-center justify-between mx-auto p-4 md:border-b md:rounded-3xl md:border-sky-400  bg-sky-400 md:bg-transparent">
-					<Link to="/" className="text-2xl font-semibold">
+					<Link
+						to="/"
+						className="text-2xl font-semibold"
+						// onClick={() => {
+						// 	if (openMenu === true) setOpenMenu(!openMenu);
+						// }}
+					>
 						MovieHunt
 					</Link>
 
@@ -154,9 +160,9 @@ const Header = () => {
 						{/* searchbar toggle button for mobile */}
 
 						<button
-							className={`p-1  ${
+							className={` ${
 								openSearchBar
-									? "text-sky-500 bg-white rounded-2xl"
+									? "text-sky-600 bg-sky-200 rounded-full pe-2 ps-2"
 									: "text-black"
 							}`}
 						>
@@ -165,6 +171,8 @@ const Header = () => {
 								onClick={() => setOpenSearchBar(!openSearchBar)}
 							/>
 						</button>
+
+						{/* Menu to be toggled in smaller devices */}
 
 						<div>
 							{openMenu ? (
