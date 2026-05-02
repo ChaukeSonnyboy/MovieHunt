@@ -18,6 +18,7 @@ const SORT_OPTIONS = [
 const Browse = () => {
 	const [searchParams, setSearchParams] = useSearchParams();
 	const [queryInput, setQueryInput] = useState(() => searchParams.get("q") || "");
+	const [filtersOpen, setFiltersOpen] = useState(false);
 
 	useEffect(() => {
 		setQueryInput(searchParams.get("q") || "");
@@ -129,8 +130,7 @@ const Browse = () => {
 			<div className="max-w-7xl mx-auto px-4 pt-6">
 				<h1 className="text-3xl font-bold text-slate-900">Explore</h1>
 				<p className="mt-1 text-slate-600 text-sm">
-					Search by title, or pick genre, year, and sort — only{" "}
-					<strong>released</strong> titles when browsing (not search).
+					Search by title, or choose genre, year, and sort.
 				</p>
 
 				<form
@@ -156,7 +156,23 @@ const Browse = () => {
 						</button>
 					</div>
 
-					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 items-end">
+					<button
+						type="button"
+						className="mt-3 flex w-full items-center justify-center rounded-lg border border-sky-500 bg-sky-50 px-4 py-2.5 text-sm font-medium text-sky-900 hover:bg-sky-100 md:hidden"
+						onClick={() => setFiltersOpen((o) => !o)}
+						aria-expanded={filtersOpen}
+						aria-controls="explore-filters"
+					>
+						{filtersOpen ? "Hide filters" : "Show filters"}
+					</button>
+
+					<div
+						id="explore-filters"
+						className={`flex flex-col gap-2 ${
+							filtersOpen ? "" : "hidden md:flex"
+						}`}
+					>
+						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 items-end">
 						<label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
 							Genre
 							<select
@@ -211,20 +227,19 @@ const Browse = () => {
 						>
 							Clear all
 						</button>
-					</div>
+						</div>
 					{isSearchMode ? (
 						<p className="text-xs text-slate-500">
 							Genre, year, and sort apply to browse mode only. Clear the search box and
 							submit empty to use filters.
 						</p>
 					) : null}
+					</div>
 				</form>
 
 				<div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-slate-600">
 					<span>
-						{loading
-							? "Loading…"
-							: `${totalResults.toLocaleString()} results${isSearchMode ? " (search)" : " (released, last 90 days window)"}`}
+						{loading ? "Loading…" : `${totalResults.toLocaleString()} results`}
 					</span>
 					{error ? (
 						<span className="text-red-600" role="alert">
