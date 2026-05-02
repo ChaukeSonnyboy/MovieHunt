@@ -68,7 +68,7 @@ const Search = ({ apiPath }) => {
 					<p className="mt-2 text-sm text-slate-600">
 						Results sorted by release date (newest first) within this page.{" "}
 						<Link to="/browse" className="text-sky-600 font-medium hover:underline">
-							Browse by filters
+							Explore with filters
 						</Link>
 					</p>
 				) : null}
