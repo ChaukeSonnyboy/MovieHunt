@@ -60,7 +60,7 @@ const Header = () => {
 							setOpenMenu(!openMenu);
 						}}
 					>
-						Browse
+						Explore
 					</NavLink>
 				</li>
 				<li>
@@ -133,7 +133,7 @@ const Header = () => {
 										isActive ? activeLink : nonActiveLink
 									}
 								>
-									Browse
+									Explore
 								</NavLink>
 							</li>
 							<li>
