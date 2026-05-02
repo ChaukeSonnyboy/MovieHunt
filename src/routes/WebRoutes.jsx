@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import Home from "../pages/Home";
+import NowPlaying from "../pages/NowPlaying";
 import Movies from "../pages/Movies";
 import Browse from "../pages/Browse";
 import MovieInfo from "../pages/MovieInfo";
@@ -11,6 +12,7 @@ const WebRoutes = () => {
 		<>
 			<Routes>
 				<Route path="/" element={<Home />} />
+				<Route path="movies/now-playing" element={<NowPlaying />} />
 				<Route path="browse" element={<Browse />} />
 				<Route path="movie/:id" element={<MovieInfo />} />
 
