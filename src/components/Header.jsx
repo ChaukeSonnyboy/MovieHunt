@@ -52,6 +52,19 @@ const Header = () => {
 				</li>
 				<li>
 					<NavLink
+						to="/movies/now-playing"
+						className={({ isActive }) =>
+							isActive ? activeLink : nonActiveLink
+						}
+						onClick={() => {
+							setOpenMenu(!openMenu);
+						}}
+					>
+						Now playing
+					</NavLink>
+				</li>
+				<li>
+					<NavLink
 						to="/browse"
 						className={({ isActive }) =>
 							isActive ? activeLink : nonActiveLink
@@ -124,6 +137,16 @@ const Header = () => {
 									}
 								>
 									Home
+								</NavLink>
+							</li>
+							<li>
+								<NavLink
+									to="/movies/now-playing"
+									className={({ isActive }) =>
+										isActive ? activeLink : nonActiveLink
+									}
+								>
+									Now playing
 								</NavLink>
 							</li>
 							<li>
