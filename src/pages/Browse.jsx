@@ -1,48 +1,38 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useTmdb } from "../hooks/useTmdb";
 import MovieCard from "../components/MovieCard";
 import useTitle from "../hooks/useTitle";
+import { todayISO, daysAgoISO } from "../lib/dates";
 
 const LIST_GRID =
 	"grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 max-w-7xl mx-auto px-4 py-5";
 
-function formatISODate(d) {
-	return d.toISOString().slice(0, 10);
-}
-
-function todayISO() {
-	return formatISODate(new Date());
-}
-
-function daysAgoISO(days) {
-	const d = new Date();
-	d.setDate(d.getDate() - days);
-	return formatISODate(d);
-}
-
 const SORT_OPTIONS = [
-	{ value: "primary_release_date.desc", label: "Newest release" },
-	{ value: "primary_release_date.asc", label: "Oldest release" },
+	{ value: "primary_release_date.desc", label: "Newest first" },
+	{ value: "primary_release_date.asc", label: "Oldest first" },
 	{ value: "popularity.desc", label: "Popularity" },
 	{ value: "vote_average.desc", label: "Highest rated" },
 ];
 
 const Browse = () => {
 	const [searchParams, setSearchParams] = useSearchParams();
-	const [filtersOpen, setFiltersOpen] = useState(false);
+	const [queryInput, setQueryInput] = useState(() => searchParams.get("q") || "");
+
+	useEffect(() => {
+		setQueryInput(searchParams.get("q") || "");
+	}, [searchParams]);
 
 	const page = Math.max(1, Number(searchParams.get("page")) || 1);
+	const q = (searchParams.get("q") || "").trim();
 	const yearParam = searchParams.get("year");
-	const fromParam = searchParams.get("from");
-	const toParam = searchParams.get("to");
 	const genreParam = searchParams.get("genre");
 	const sortBy = searchParams.get("sort") || "primary_release_date.desc";
 
 	const year = yearParam ? Number(yearParam) : null;
-	const from = fromParam || null;
-	const to = toParam || null;
 	const genre = genreParam || "";
+
+	const isSearchMode = Boolean(q);
 
 	const discoverParams = useMemo(() => {
 		const p = {
@@ -51,26 +41,40 @@ const Browse = () => {
 			include_adult: false,
 			include_video: false,
 		};
-
-		if (from || to) {
-			if (from) p["primary_release_date.gte"] = from;
-			if (to) p["primary_release_date.lte"] = to;
-		} else if (year) {
+		if (year) {
 			p.primary_release_year = year;
+			p["primary_release_date.lte"] = todayISO();
 		} else {
 			p["primary_release_date.gte"] = daysAgoISO(90);
 			p["primary_release_date.lte"] = todayISO();
 		}
-
 		if (genre) p.with_genres = genre;
-
 		return p;
-	}, [page, year, from, to, genre, sortBy]);
+	}, [page, year, genre, sortBy]);
 
-	const { results: movies, loading, error, totalPages, totalResults } = useTmdb(
-		"discover/movie",
-		discoverParams
+	const searchParamsApi = useMemo(
+		() => ({ query: q, page }),
+		[q, page]
 	);
+
+	const discoverQuery = useTmdb("discover/movie", discoverParams, {
+		enabled: !isSearchMode,
+	});
+	const searchQuery = useTmdb("search/movie", searchParamsApi, {
+		enabled: isSearchMode,
+	});
+
+	const active = isSearchMode ? searchQuery : discoverQuery;
+	const { loading, error, totalPages, totalResults } = active;
+	const rawList = active.results;
+
+	const todayStr = todayISO();
+	const movies = useMemo(() => {
+		if (isSearchMode) return rawList;
+		return rawList.filter(
+			(m) => m.release_date && m.release_date <= todayStr
+		);
+	}, [rawList, isSearchMode, todayStr]);
 
 	const { results: genreList } = useTmdb("genre/movie/list", {});
 
@@ -82,7 +86,7 @@ const Browse = () => {
 		return m;
 	}, [genreList]);
 
-	useTitle("Browse movies");
+	useTitle("Explore");
 
 	const setParam = (key, value) => {
 		const next = new URLSearchParams(searchParams);
@@ -95,108 +99,103 @@ const Browse = () => {
 		setSearchParams(next);
 	};
 
-	const applyFilters = (e) => {
+	const onSubmitSearch = (e) => {
 		e.preventDefault();
-		const fd = new FormData(e.target);
-		const next = new URLSearchParams();
-		const y = fd.get("year");
-		const f = fd.get("from");
-		const t = fd.get("to");
-		const g = fd.get("genre");
-		const s = fd.get("sort");
-		if (y) next.set("year", y);
-		if (f) next.set("from", f);
-		if (t) next.set("to", t);
-		if (g) next.set("genre", g);
-		if (s) next.set("sort", s);
+		const next = new URLSearchParams(searchParams);
+		const trimmed = queryInput.trim();
+		if (trimmed) {
+			next.set("q", trimmed);
+		} else {
+			next.delete("q");
+		}
+		next.delete("page");
 		setSearchParams(next);
-		setFiltersOpen(false);
 	};
 
-	const clearFilters = () => {
+	const clearAll = () => {
+		setQueryInput("");
 		setSearchParams({});
-		setFiltersOpen(false);
 	};
 
-	const hasCustomRange = Boolean(from || to);
-	const hasYear = Boolean(year);
+	const yearOptions = useMemo(() => {
+		const cy = new Date().getFullYear();
+		const arr = [];
+		for (let y = cy; y >= 1950; y--) arr.push(y);
+		return arr;
+	}, []);
 
 	return (
 		<section className="pb-10">
 			<div className="max-w-7xl mx-auto px-4 pt-6">
-				<h1 className="text-3xl font-bold text-slate-900">Browse by release & genre</h1>
-				<p className="mt-2 text-slate-600 max-w-2xl">
-					Filter by year, release window, or genre. By default we show titles released in the{" "}
-					<strong>last 90 days</strong> (new releases). Adjust filters to explore more.
+				<h1 className="text-3xl font-bold text-slate-900">Explore</h1>
+				<p className="mt-1 text-slate-600 text-sm">
+					Search by title, or pick genre, year, and sort — only{" "}
+					<strong>released</strong> titles when browsing (not search).
 				</p>
 
-				<button
-					type="button"
-					className="mt-4 md:hidden rounded-lg border border-sky-500 bg-sky-50 px-4 py-2 font-medium text-sky-800"
-					onClick={() => setFiltersOpen(!filtersOpen)}
+				<form
+					onSubmit={onSubmitSearch}
+					className="mt-6 flex flex-col gap-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
 				>
-					{filtersOpen ? "Hide filters" : "Show filters"}
-				</button>
+					<div className="flex flex-col lg:flex-row gap-3 lg:items-end">
+						<label className="flex-1 flex flex-col gap-1 text-sm font-medium text-slate-700">
+							Search titles
+							<input
+								type="search"
+								value={queryInput}
+								onChange={(e) => setQueryInput(e.target.value)}
+								placeholder="Type a movie name…"
+								className="rounded-lg border border-slate-300 px-3 py-2 w-full"
+							/>
+						</label>
+						<button
+							type="submit"
+							className="rounded-lg bg-sky-500 px-5 py-2.5 font-semibold text-white hover:bg-sky-600 lg:self-end"
+						>
+							Search
+						</button>
+					</div>
 
-				<div
-					className={`mt-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm ${
-						filtersOpen ? "block" : "hidden"
-					} md:block`}
-				>
-					<form onSubmit={applyFilters} className="flex flex-col gap-4">
-						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-							<label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
-								Year
-								<input
-									name="year"
-									type="number"
-									min="1900"
-									max="2100"
-									placeholder="e.g. 2026"
-									defaultValue={yearParam || ""}
-									className="rounded-md border border-slate-300 px-3 py-2"
-								/>
-							</label>
-							<label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
-								From
-								<input
-									name="from"
-									type="date"
-									defaultValue={from || ""}
-									className="rounded-md border border-slate-300 px-3 py-2"
-								/>
-							</label>
-							<label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
-								To
-								<input
-									name="to"
-									type="date"
-									defaultValue={to || ""}
-									className="rounded-md border border-slate-300 px-3 py-2"
-								/>
-							</label>
-							<label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
-								Genre
-								<select
-									name="genre"
-									defaultValue={genre}
-									className="rounded-md border border-slate-300 px-3 py-2 bg-white"
-								>
-									<option value="">All genres</option>
-									{genreList.map((g) => (
-										<option key={g.id} value={String(g.id)}>
-											{g.name}
-										</option>
-									))}
-								</select>
-							</label>
-						</div>
-						<label className="flex flex-col gap-1 text-sm font-medium text-slate-700 max-w-md">
-							Sort by
+					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 items-end">
+						<label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
+							Genre
 							<select
-								name="sort"
-								defaultValue={sortBy}
-								className="rounded-md border border-slate-300 px-3 py-2 bg-white"
+								value={genre}
+								disabled={isSearchMode}
+								onChange={(e) => setParam("genre", e.target.value)}
+								className="rounded-lg border border-slate-300 px-3 py-2 bg-white disabled:opacity-50"
+							>
+								<option value="">All</option>
+								{genreList.map((g) => (
+									<option key={g.id} value={String(g.id)}>
+										{g.name}
+									</option>
+								))}
+							</select>
+						</label>
+						<label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
+							Year
+							<select
+								value={yearParam || ""}
+								disabled={isSearchMode}
+								onChange={(e) => setParam("year", e.target.value)}
+								className="rounded-lg border border-slate-300 px-3 py-2 bg-white disabled:opacity-50"
+							>
+								<option value="">Any</option>
+								{yearOptions.map((y) => (
+									<option key={y} value={String(y)}>
+										{y}
+									</option>
+								))}
+							</select>
+						</label>
+						<label className="flex flex-col gap-1 text-sm font-medium text-slate-700">
+							Sort
+							<select
+								value={sortBy}
+								disabled={isSearchMode}
+								onChange={(e) => setParam("sort", e.target.value)}
+								className="rounded-lg border border-slate-300 px-3 py-2 bg-white disabled:opacity-50"
 							>
 								{SORT_OPTIONS.map((o) => (
 									<option key={o.value} value={o.value}>
@@ -205,34 +204,27 @@ const Browse = () => {
 								))}
 							</select>
 						</label>
-						<div className="flex flex-wrap gap-2">
-							<button
-								type="submit"
-								className="rounded-lg bg-sky-500 px-4 py-2 font-semibold text-white hover:bg-sky-600"
-							>
-								Apply
-							</button>
-							<button
-								type="button"
-								onClick={clearFilters}
-								className="rounded-lg border border-slate-300 px-4 py-2 font-medium text-slate-700 hover:bg-slate-50"
-							>
-								Reset to last 90 days
-							</button>
-						</div>
+						<button
+							type="button"
+							onClick={clearAll}
+							className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+						>
+							Clear all
+						</button>
+					</div>
+					{isSearchMode ? (
 						<p className="text-xs text-slate-500">
-							{hasCustomRange
-								? "Date range is active (year-only filter is ignored until you clear from/to)."
-								: hasYear
-									? "Calendar year filter is active."
-									: "Default: titles with primary release in roughly the last 90 days."}
+							Genre, year, and sort apply to browse mode only. Clear the search box and
+							submit empty to use filters.
 						</p>
-					</form>
-				</div>
+					) : null}
+				</form>
 
 				<div className="mt-4 flex flex-wrap items-center gap-2 text-sm text-slate-600">
 					<span>
-						{loading ? "Loading…" : `${totalResults.toLocaleString()} results`}
+						{loading
+							? "Loading…"
+							: `${totalResults.toLocaleString()} results${isSearchMode ? " (search)" : " (released, last 90 days window)"}`}
 					</span>
 					{error ? (
 						<span className="text-red-600" role="alert">
@@ -243,11 +235,11 @@ const Browse = () => {
 			</div>
 
 			{loading && movies.length === 0 ? (
-				<p className="text-center py-12 text-slate-500">Loading movies…</p>
+				<p className="text-center py-12 text-slate-500">Loading…</p>
 			) : null}
 
 			{!loading && movies.length === 0 && !error ? (
-				<p className="text-center py-12 text-slate-500">No movies match these filters.</p>
+				<p className="text-center py-12 text-slate-500">Nothing found. Try another search or filter.</p>
 			) : null}
 
 			<div className={LIST_GRID}>
@@ -289,7 +281,7 @@ const Browse = () => {
 			) : null}
 
 			<p className="text-center text-xs text-slate-400 mt-8 px-4">
-				Data provided by{" "}
+				Data from{" "}
 				<a
 					href="https://www.themoviedb.org/"
 					target="_blank"
@@ -298,7 +290,7 @@ const Browse = () => {
 				>
 					TMDB
 				</a>
-				. This product uses the TMDB API but is not endorsed or certified by TMDB.
+				.
 			</p>
 		</section>
 	);
