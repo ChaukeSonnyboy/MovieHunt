@@ -57,10 +57,10 @@ const Home = () => {
 							Explore
 						</Link>
 						<Link
-							to="/movies/popular"
+							to="/movies/upcoming"
 							className="inline-flex items-center rounded-lg border border-white/40 bg-white/10 px-4 py-2 text-sm font-semibold text-white hover:bg-white/20"
 						>
-							Popular
+							Upcoming
 						</Link>
 					</div>
 				</div>
