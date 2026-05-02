@@ -81,9 +81,13 @@ const Movies = ({ title, discoverKind }) => {
 	const yearOptions = useMemo(() => {
 		const cy = new Date().getFullYear();
 		const arr = [];
-		for (let y = cy + 1; y >= 1950; y--) arr.push(y);
+		if (discoverKind === "upcoming") {
+			for (let y = cy + 8; y >= cy; y--) arr.push(y);
+		} else {
+			for (let y = cy; y >= 1950; y--) arr.push(y);
+		}
 		return arr;
-	}, []);
+	}, [discoverKind]);
 
 	const setParam = (key, value) => {
 		const next = new URLSearchParams(searchParams);
@@ -152,9 +156,7 @@ const Movies = ({ title, discoverKind }) => {
 					</p>
 				) : null}
 				<p className="mt-3 text-slate-600 text-sm">
-					{loading
-						? "Loading…"
-						: `${totalResults.toLocaleString()} matches from TMDB · ${sortedMoviesList.length} shown on this page (after release filters)`}
+					{loading ? "Loading…" : `${totalResults.toLocaleString()} matches`}
 				</p>
 			</div>
 
