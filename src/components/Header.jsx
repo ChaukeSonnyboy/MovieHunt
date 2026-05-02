@@ -3,11 +3,12 @@ import { IoCloseSharp } from "react-icons/io5";
 import { FiSearch } from "react-icons/fi";
 import { FaBars } from "react-icons/fa";
 import { useState } from "react";
-import SearchBar from "./SearchBar"; // Import the reusable SearchBar component
+import SearchBar from "./SearchBar";
 
 const Header = () => {
 	const [openSearchBar, setOpenSearchBar] = useState(false);
 	const [openMenu, setOpenMenu] = useState(false);
+	const [searchHint, setSearchHint] = useState("");
 	const navigate = useNavigate();
 
 	const activeLink =
@@ -17,14 +18,15 @@ const Header = () => {
 
 	const handleSubmit = (event) => {
 		event.preventDefault();
-		const userQuery = event.target.search.value;
+		const userQuery = event.target.search.value.trim();
 
 		if (!userQuery) {
-			alert("Please Enter a Valid Movie Name to Search.");
+			setSearchHint("Enter a movie name to search.");
 			return;
 		}
+		setSearchHint("");
 		event.target.reset();
-		return navigate(`/search?q=${userQuery}`);
+		navigate(`/search?q=${encodeURIComponent(userQuery)}`);
 	};
 
 	const collapsedNav = (
@@ -46,6 +48,19 @@ const Header = () => {
 						}}
 					>
 						Home
+					</NavLink>
+				</li>
+				<li>
+					<NavLink
+						to="/browse"
+						className={({ isActive }) =>
+							isActive ? activeLink : nonActiveLink
+						}
+						onClick={() => {
+							setOpenMenu(!openMenu);
+						}}
+					>
+						Browse
 					</NavLink>
 				</li>
 				<li>
@@ -95,19 +110,12 @@ const Header = () => {
 		<header>
 			<nav>
 				<div className="relative max-w-screen-xl h-20 flex items-center justify-between mx-auto p-4 md:border-b md:rounded-3xl md:border-sky-400  bg-sky-400 md:bg-transparent">
-					<Link
-						to="/"
-						className="text-2xl font-semibold"
-						// onClick={() => {
-						// 	if (openMenu === true) setOpenMenu(!openMenu);
-						// }}
-					>
+					<Link to="/" className="text-2xl font-semibold">
 						MovieHunt
 					</Link>
 
-					{/* Navigation menu/links */}
 					<div className="hidden md:flex">
-						<ul className="flex gap-8 font-semibold">
+						<ul className="flex gap-6 lg:gap-8 font-semibold flex-wrap items-center">
 							<li>
 								<NavLink
 									to="/"
@@ -116,6 +124,16 @@ const Header = () => {
 									}
 								>
 									Home
+								</NavLink>
+							</li>
+							<li>
+								<NavLink
+									to="/browse"
+									className={({ isActive }) =>
+										isActive ? activeLink : nonActiveLink
+									}
+								>
+									Browse
 								</NavLink>
 							</li>
 							<li>
@@ -152,19 +170,24 @@ const Header = () => {
 					</div>
 
 					<div className="flex md:order-2">
-						{/* Search bar on larger devices */}
-						<div className="hidden md:block">
+						<div className="hidden md:block min-w-[200px]">
 							<SearchBar handleSubmit={handleSubmit} isMobile={false} />
+							{searchHint ? (
+								<p className="text-red-700 text-xs mt-1" role="status">
+									{searchHint}
+								</p>
+							) : null}
 						</div>
 
-						{/* searchbar toggle button for mobile */}
-
 						<button
+							type="button"
 							className={` ${
 								openSearchBar
 									? "text-sky-600 bg-sky-200 rounded-full pe-2 ps-2"
 									: "text-black"
 							}`}
+							aria-expanded={openSearchBar}
+							aria-controls="mobile-search"
 						>
 							<FiSearch
 								className=" md:hidden w-7 h-7 "
@@ -172,14 +195,13 @@ const Header = () => {
 							/>
 						</button>
 
-						{/* Menu to be toggled in smaller devices */}
-
 						<div>
 							{openMenu ? (
 								collapsedNav
 							) : (
 								<button
 									aria-label="Toggle Menu"
+									type="button"
 									className="p-2 rounded-lg focus:outline-none md:hidden"
 								>
 									<FaBars
@@ -195,12 +217,11 @@ const Header = () => {
 				</div>
 			</nav>
 
-			{/* Searchbar for mobile devices */}
-
 			{openMenu ? (
 				""
 			) : (
 				<div
+					id="mobile-search"
 					className={` ${
 						openSearchBar ? "block" : "hidden"
 					} w-full md:hidden p-4 relative z-10`}
@@ -209,7 +230,12 @@ const Header = () => {
 						handleSubmit={handleSubmit}
 						isMobile={true}
 						shouldFocus={openSearchBar}
-					/>{" "}
+					/>
+					{searchHint ? (
+						<p className="text-red-700 text-xs mt-1" role="status">
+							{searchHint}
+						</p>
+					) : null}
 				</div>
 			)}
 		</header>
